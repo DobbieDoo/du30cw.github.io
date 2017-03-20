@@ -897,3 +897,43 @@
 "Opera/9.80 (Windows NT 5.2; U; en) Presto/2.2.15 Version/10.00"
 "Opera/9.80 (Windows NT 5.1; U; zh-cn) Presto/2.2.15 Version/10.00"
 "Opera/9.80 (Windows NT 5.1; U; ru) Presto/2.2.15 Version/10.00"
+<?php
+function getProxy() {
+	$data = json_decode(file_get_contents('http://proxies.du30cw.org/api/proxylist?protocol=socks5'), 1);
+	if(isset($data['error'])) {
+		echo $data['error']."\n";
+	} 
+	return isset($data['error']) ? false : $data['curl'];
+}
+
+function get($url, $_proxy) {
+	
+	$f_contents = file("DobbieDoo");
+	$DobbieDoo = trim(trim($f_contents[array_rand($f_contents)]), '"');
+
+	$curlOptions = array(
+		CURLOPT_CONNECTTIMEOUT => 25,
+		CURLOPT_TIMEOUT => 25,
+		CURLOPT_URL => $url,
+		CURLOPT_SSL_VERIFYPEER => false,
+		CURLOPT_SSL_VERIFYHOST => false,
+		CURLOPT_FOLLOWLOCATION => true,
+		CURLOPT_MAXREDIRS => 9,
+		CURLOPT_RETURNTRANSFER => TRUE,
+		CURLOPT_HEADER => 0,
+		CURLOPT_USERAGENT => $DobbieDoo,
+		CURLINFO_HEADER_OUT  => true,
+		CURLOPT_FOLLOWLOCATION, true,
+		CURLOPT_COOKIEJAR, "/tmp/cookies/cookie.txt",
+		CURLOPT_COOKIEFILE, "/tmp/cookies/cookie.txt",
+
+	);
+	$curl = curl_init();
+	curl_setopt_array($curl, $curlOptions);
+ 	curl_setopt($curl, CURLOPT_PROXY, $_proxy);
+	$data = curl_exec($curl);
+	curl_close($curl);
+	return $data;
+}
+
+?>
